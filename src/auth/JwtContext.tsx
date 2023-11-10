@@ -1,8 +1,9 @@
 import { createContext, useEffect, useReducer, useCallback, useMemo } from 'react';
 // utils
+import camelcaseKeys from 'camelcase-keys';
 import axios from '@/utils/axios';
 import { AxiosResponse } from 'axios';
-import localStorageAvailable from '@/utils/localStorageAvailable';
+import localStorageAvailable from '@/utils/localStorage';
 //
 import { isValidToken, setSession } from './utils';
 import { ActionMapType, AuthStateType, AuthUserType, JWTContextType } from './types';
@@ -92,7 +93,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
       if (accessToken && isValidToken(accessToken)) {
         setSession(accessToken);
 
-        const { data: user }: AxiosResponse = await axios.get('/api/account/me');
+        const { data }: AxiosResponse = await axios.get('/api/account/me');
+        const user = camelcaseKeys(data, { deep: true });
 
         dispatch({
           type: Types.INITIAL,
@@ -136,7 +138,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
     setSession(access);
 
-    const { data: user }: AxiosResponse = await axios.get('/api/account/me');
+    const { data }: AxiosResponse = await axios.get('/api/account/me');
+    const user = camelcaseKeys(data, { deep: true });
 
     dispatch({
       type: Types.LOGIN,

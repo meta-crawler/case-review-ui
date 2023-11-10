@@ -40,8 +40,6 @@ export interface MainCardProps extends KeyedObject {
   shadow?: string;
   elevation?: number;
   title?: ReactNode | string;
-  codeHighlight?: boolean;
-  codeString?: string;
   modal?: boolean;
 }
 
@@ -61,8 +59,6 @@ const MainCard = forwardRef(
       shadow,
       sx = {},
       title,
-      codeHighlight = false,
-      codeString,
       modal = false,
       ...others
     }: MainCardProps,
@@ -89,14 +85,6 @@ const MainCard = forwardRef(
           ':hover': {
             boxShadow: boxShadow ? shadow || theme.customShadows.z1 : 'inherit',
           },
-          ...(codeHighlight && {
-            '& pre': {
-              m: 0,
-              p: '12px !important',
-              fontFamily: theme.typography.fontFamily,
-              fontSize: '0.75rem',
-            },
-          }),
           ...(modal && {
             position: 'absolute' as 'absolute',
             top: '50%',

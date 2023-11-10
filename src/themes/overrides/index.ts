@@ -22,6 +22,7 @@ import InputBase from './InputBase';
 import InputLabel from './InputLabel';
 import LinearProgress from './LinearProgress';
 import Link from './Link';
+import ListItemButton from './ListItemButton';
 import LoadingButton from './LoadingButton';
 import OutlinedInput from './OutlinedInput';
 import Popover from './Popover';
@@ -52,6 +53,7 @@ export default function ComponentsOverrides(theme: Theme) {
     InputLabel(theme),
     LinearProgress(),
     Link(),
+    ListItemButton(theme),
     LoadingButton(),
     OutlinedInput(theme),
     Popover(theme),

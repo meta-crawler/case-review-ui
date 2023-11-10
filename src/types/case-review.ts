@@ -6,6 +6,7 @@ export interface ICaseReviewStatus {
 }
 
 export interface ICaseReview {
+  id: number;
   authority: IUser;
   assigner: IUser;
   status: ICaseReviewStatus;

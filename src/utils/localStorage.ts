@@ -10,3 +10,11 @@ export default function localStorageAvailable() {
     return false;
   }
 }
+
+export const storeDataToLocalStorage = (key: string, data: any) => {
+  if (data) {
+    localStorage.setItem(key, data);
+  } else {
+    localStorage.removeItem(key);
+  }
+};

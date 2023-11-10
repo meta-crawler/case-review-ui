@@ -25,6 +25,7 @@ const slice = createSlice({
 
     getCommentsSuccess(state, action) {
       state.isLoading = false;
+      state.error = null;
       state.comments = action.payload.data;
     },
   },

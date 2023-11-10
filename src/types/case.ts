@@ -8,6 +8,7 @@ export interface ICaseStatus {
 }
 
 export interface ICase {
+  id: number;
   alert: IAlert;
   authority: IUser;
   status: ICaseStatus;

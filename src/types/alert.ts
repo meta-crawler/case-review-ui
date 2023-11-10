@@ -5,7 +5,7 @@ export interface IAlertType {
 }
 
 export interface IAlert {
-  id: 1;
+  id: number;
   zone: string;
   camera: string;
   alertType: IAlertType;
