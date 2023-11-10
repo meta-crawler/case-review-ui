@@ -39,6 +39,7 @@ export default function CaseReview({ caseReview }: ICaseReviewProps) {
 
   const handleClickSave = () => {
     setAbleToEdit(!ableToEdit);
+    // Todo: Should add to save updated data in local
   };
 
   const initialValues = {

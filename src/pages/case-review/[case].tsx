@@ -8,6 +8,7 @@ import { Grid, Stack, Typography, Button, ButtonGroup } from '@mui/material';
 // project-import
 import MainCard from '@/components/MainCard';
 import CaseReview from '@/sections/case-review';
+import Comment from '@/sections/comment';
 
 // redux
 import { useDispatch, useSelector } from '@/redux/store';
@@ -38,8 +39,10 @@ export default function Case() {
         sx={{
           width: '100%',
           maxWidth: { xs: '360px', md: '640px', lg: '1024px' },
-          m: { xs: 2, md: 4, lg: 6 },
+          mx: { xs: 2, md: 4, lg: 6 },
+          my: { xs: 1, md: 2, lg: 3 },
           p: { xs: 2, md: 4, lg: 6 },
+          overflowY: 'auto',
         }}
       >
         <Grid container spacing={{ xs: 3, md: 6, lg: 9 }}>
@@ -199,7 +202,7 @@ export default function Case() {
           </Grid>
 
           <Grid item xs={12} md={6}>
-            {/*Comment Module*/}
+            <Comment team={selectedCase?.authority?.team} comments={[]} />
           </Grid>
 
           <Grid item xs={12} md={6}>

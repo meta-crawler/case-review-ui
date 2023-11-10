@@ -18,7 +18,7 @@ import { KeyedObject } from '@/types/root';
 import { ThemeMode } from '@/types/config';
 
 // header style
-const headerSX = {
+const defaultHeaderSX = {
   p: 2.5,
   '& .MuiCardHeader-action': { m: '0px auto', alignSelf: 'center' },
 };
@@ -33,6 +33,7 @@ export interface MainCardProps extends KeyedObject {
   style?: CSSProperties;
   content?: boolean;
   contentSX?: CardContentProps['sx'];
+  headerSX?: CardHeaderProps['sx'];
   darkTitle?: boolean;
   divider?: boolean;
   sx?: CardProps['sx'];
@@ -52,6 +53,7 @@ const MainCard = forwardRef(
       subheader,
       content = true,
       contentSX = {},
+      headerSX = {},
       darkTitle,
       divider = true,
       elevation,
@@ -103,7 +105,7 @@ const MainCard = forwardRef(
         {/* card header and action */}
         {!darkTitle && title && (
           <CardHeader
-            sx={headerSX}
+            sx={{ ...defaultHeaderSX, ...headerSX }}
             titleTypographyProps={{ variant: 'subtitle1' }}
             title={title}
             action={secondary}
@@ -112,7 +114,7 @@ const MainCard = forwardRef(
         )}
         {darkTitle && title && (
           <CardHeader
-            sx={headerSX}
+            sx={{ ...defaultHeaderSX, ...headerSX }}
             title={<Typography variant="h4">{title}</Typography>}
             action={secondary}
           />
