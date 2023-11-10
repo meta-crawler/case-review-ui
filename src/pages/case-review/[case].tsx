@@ -7,6 +7,7 @@ import { Grid, Stack, Typography, Button, ButtonGroup } from '@mui/material';
 
 // project-import
 import MainCard from '@/components/MainCard';
+import CaseReview from '@/sections/case-review';
 
 // redux
 import { useDispatch, useSelector } from '@/redux/store';
@@ -18,7 +19,7 @@ const enum TAB {
   AREA_CONTROL = 'area-control',
 }
 
-export default function CaseReview() {
+export default function Case() {
   const router = useRouter();
   const theme = useTheme();
   const dispatch = useDispatch();
@@ -37,12 +38,12 @@ export default function CaseReview() {
         sx={{
           width: '100%',
           maxWidth: { xs: '360px', md: '640px', lg: '1024px' },
-          m: { xs: 2, md: 4, lg: 9 },
+          m: { xs: 2, md: 4, lg: 6 },
           p: { xs: 2, md: 4, lg: 6 },
         }}
       >
-        <Grid container>
-          <Grid item xs={12} md={6} spacing={{ xs: 3, md: 6, lg: 9 }}>
+        <Grid container spacing={{ xs: 3, md: 6, lg: 9 }}>
+          <Grid item xs={12} md={6}>
             <Stack spacing={3}>
               <Stack spacing={1}>
                 <Typography variant="h2" color="text.primary">
@@ -94,7 +95,7 @@ export default function CaseReview() {
                 </Button>
               </ButtonGroup>
 
-              <Stack>
+              <Stack spacing={1}>
                 <Stack direction="row" alignItems="center">
                   <Typography
                     variant="body1"
@@ -194,7 +195,7 @@ export default function CaseReview() {
           </Grid>
 
           <Grid item xs={12} md={6}>
-            {/*Case Review Module*/}
+            <CaseReview caseReview={selectedCase?.caseReview} />
           </Grid>
 
           <Grid item xs={12} md={6}>

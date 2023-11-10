@@ -1,6 +1,7 @@
 import { IUser } from '@/types/user';
 
 export interface ICaseReviewStatus {
+  id: number;
   name: string;
   description: string;
 }

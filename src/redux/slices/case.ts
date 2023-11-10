@@ -62,12 +62,14 @@ export const getCase = (id: number) => async (dispatch: Dispatch) => {
   }
 };
 
-export const getCasesByAuthority = (authorityId: number) => async (dispatch: Dispatch) => {
-  dispatch(startLoading());
-  try {
-    const { data }: AxiosResponse = await getCasesByAuthorityApi(authorityId);
-    dispatch(getCasesSuccess(camelcaseKeys(data, { deep: true })));
-  } catch (error) {
-    dispatch(hasError(error));
-  }
-};
+export const getCasesByAuthority =
+  (authorityId: number = -1) =>
+  async (dispatch: Dispatch) => {
+    dispatch(startLoading());
+    try {
+      const { data }: AxiosResponse = await getCasesByAuthorityApi(authorityId);
+      dispatch(getCasesSuccess(camelcaseKeys(data, { deep: true })));
+    } catch (error) {
+      dispatch(hasError(error));
+    }
+  };

@@ -3,6 +3,7 @@ import { IUser } from '@/types/user';
 import { ICaseReview } from '@/types/case-review';
 
 export interface ICaseStatus {
+  id: number;
   name: string;
   description: string;
 }
