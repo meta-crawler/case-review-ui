@@ -4,6 +4,7 @@ import {
   useDispatch as useAppDispatch,
   useSelector as useAppSelector,
 } from 'react-redux';
+import { persistStore } from 'redux-persist';
 import rootReducer from './rootReducer';
 
 // ----------------------------------------------------------------------
@@ -20,6 +21,8 @@ const store = configureStore({
       immutableCheck: false,
     }),
 });
+
+export const persister = persistStore(store);
 
 const { dispatch } = store;
 
