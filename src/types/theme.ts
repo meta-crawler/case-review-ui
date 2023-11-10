@@ -15,6 +15,7 @@ export type CustomShadowProps = {
   button: string;
   text: string;
   z1: string;
+  z2: string;
   primary: string;
   primaryButton: string;
   secondary: string;

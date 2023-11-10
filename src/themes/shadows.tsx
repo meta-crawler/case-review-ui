@@ -15,6 +15,10 @@ const CustomShadows = (theme: Theme): CustomShadowProps => ({
     theme.palette.mode === ThemeMode.DARK
       ? `0px 1px 1px rgb(0 0 0 / 14%), 0px 2px 1px rgb(0 0 0 / 12%), 0px 1px 3px rgb(0 0 0 / 20%)`
       : `0px 1px 4px ${alpha(theme.palette.grey[900], 0.08)}`,
+  z2:
+    theme.palette.mode === ThemeMode.DARK
+      ? `0px 2px 2px rgb(0 0 0 / 14%), 0px 4px 2px rgb(0 0 0 / 12%), 0px 2px 6px rgb(0 0 0 / 20%)`
+      : `0px 2px 8px ${alpha(theme.palette.grey[900], 0.08)}`,
   primary: `0 0 0 2px ${alpha(theme.palette.primary.main, 0.2)}`,
   secondary: `0 0 0 2px ${alpha(theme.palette.secondary.main, 0.2)}`,
   error: `0 0 0 2px ${alpha(theme.palette.error.main, 0.2)}`,

@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import Link from 'next/link';
 
 // material-ui
 import {
@@ -50,7 +51,7 @@ export default function IndexPage() {
         direction="column"
         alignItems="center"
         spacing={3}
-        sx={{ py: { xs: 3, md: 6, lg: 9 } }}
+        sx={{ py: { xs: 3, md: 6, lg: 9 }, px: 2 }}
       >
         <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={2}>
           <Typography variant="body1">
@@ -82,24 +83,26 @@ export default function IndexPage() {
           >
             {cases &&
               cases.map((data, index) => (
-                <ListItemButton key={data.id} divider={index !== cases.length - 1}>
-                  <ListItemText
-                    primary={
-                      <Typography variant="h6">
-                        {`# ${data.id.toString().padStart(4, '0')}`}{' '}
-                        <Typography component="span" variant="h5">
-                          {data.alert.alertType.name}
+                <Link key={data.id} href="/case-review/[case]" as={`/case-review/${data.id}`}>
+                  <ListItemButton key={data.id} divider={index !== cases.length - 1}>
+                    <ListItemText
+                      primary={
+                        <Typography variant="h6">
+                          {`# ${data.id.toString().padStart(4, '0')}`}{' '}
+                          <Typography component="span" variant="h5">
+                            {data.alert.alertType.name}
+                          </Typography>
                         </Typography>
+                      }
+                      secondary={<Typography variant="body1">{data.status.name}</Typography>}
+                    />
+                    <ListItemSecondaryAction>
+                      <Typography variant="caption" noWrap>
+                        {dayjs(data.updatedAt).format('MM/DD/YYYY HH:mm')}
                       </Typography>
-                    }
-                    secondary={<Typography variant="body1">{data.status.name}</Typography>}
-                  />
-                  <ListItemSecondaryAction>
-                    <Typography variant="caption" noWrap>
-                      {dayjs(data.updatedAt).format('MM/DD/YYYY HH:mm')}
-                    </Typography>
-                  </ListItemSecondaryAction>
-                </ListItemButton>
+                    </ListItemSecondaryAction>
+                  </ListItemButton>
+                </Link>
               ))}
           </List>
         </MainCard>
