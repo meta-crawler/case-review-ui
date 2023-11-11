@@ -1,14 +1,20 @@
 import { createSlice, Dispatch } from '@reduxjs/toolkit';
 import camelcaseKeys from 'camelcase-keys';
 import { AxiosResponse } from 'axios';
-import { ICaseState } from '@/redux/types/case';
-import { getAllCasesApi, getCaseApi, getCasesByAuthorityApi } from '@/lib/apis/case';
+import { ICaseState, ILocalCase, ILocalCaseData } from '@/redux/types/case';
+import {
+  getAllCasesApi,
+  getCaseApi,
+  getCasesByAuthorityApi,
+  updateCaseReviewForCaseApi,
+} from '@/lib/apis/case';
 
 const initialState: ICaseState = {
   isLoading: false,
   error: null,
   case: null,
   cases: null,
+  localCase: null,
 };
 
 const slice = createSlice({
@@ -34,13 +40,31 @@ const slice = createSlice({
       state.isLoading = false;
       state.error = null;
       state.case = action.payload.data?.[0];
+      if (state.case) {
+        const localCase: ILocalCaseData = {
+          caseReview: {
+            id: state.case.caseReview.id,
+            authority: state.case.caseReview.authority.id,
+            assigner: state.case.caseReview.assigner.id,
+            status: state.case.caseReview.status.id,
+          },
+        };
+        state.localCase = localCase;
+      }
+    },
+
+    setLocalCaseSuccess(state, action) {
+      if (state.localCase) {
+        state.localCase = { ...state.localCase, [action.payload.field]: action.payload.data };
+      }
     },
   },
 });
 
 export default slice.reducer;
 
-const { startLoading, hasError, getCasesSuccess, getCaseSuccess } = slice.actions;
+const { startLoading, hasError, getCasesSuccess, getCaseSuccess, setLocalCaseSuccess } =
+  slice.actions;
 
 export const getAllCases = () => async (dispatch: Dispatch) => {
   dispatch(startLoading());
@@ -73,3 +97,17 @@ export const getCasesByAuthority =
       dispatch(hasError(error));
     }
   };
+
+export const setLocalCase =
+  (payload: { field: string; data: ILocalCase }) => async (dispatch: Dispatch) =>
+    dispatch(setLocalCaseSuccess(payload));
+
+export const updateCaseReview = (caseReview: ILocalCase) => async (dispatch: Dispatch) => {
+  dispatch(startLoading());
+  try {
+    const { data }: AxiosResponse = await updateCaseReviewForCaseApi(caseReview);
+    dispatch(getCaseSuccess(camelcaseKeys(data, { deep: true })));
+  } catch (error) {
+    dispatch(hasError(error));
+  }
+};

@@ -12,6 +12,7 @@ import {
 } from '@mui/material';
 
 // project-import
+import { IUser } from '@/types/user';
 import { ICaseReview } from '@/types/case-review';
 import { CaseReviewStatusOption } from '@/lib/constants/case-review';
 
@@ -22,7 +23,7 @@ import { useFormik } from 'formik';
 // redux
 import { useDispatch, useSelector } from '@/redux/store';
 import { getUserList } from '@/redux/slices/user';
-import { IUser } from '@/types/user';
+import { setLocalCase } from '@/redux/slices/case';
 
 export interface ICaseReviewProps {
   caseReview: ICaseReview | undefined;
@@ -34,13 +35,10 @@ export default function CaseReview({ caseReview }: ICaseReviewProps) {
   const [ableToEdit, setAbleToEdit] = useState<boolean>(false);
 
   useEffect(() => {
-    dispatch(getUserList());
+    if (caseReview) {
+      dispatch(getUserList());
+    }
   }, [caseReview]);
-
-  const handleClickSave = () => {
-    setAbleToEdit(!ableToEdit);
-    // Todo: Should add to save updated data in local
-  };
 
   const initialValues = {
     authority: caseReview?.authority?.id || '',
@@ -75,12 +73,29 @@ export default function CaseReview({ caseReview }: ICaseReviewProps) {
     }
   }, [caseReview]);
 
+  const handleClickSave = () => {
+    setAbleToEdit(!ableToEdit);
+    // Todo: Should add to save updated data in local
+    if (caseReview) {
+      dispatch(
+        setLocalCase({
+          field: 'caseReview',
+          data: {
+            id: caseReview.id,
+            authority: Number(values.authority),
+            assigner: Number(values.assigner),
+            status: Number(values.status),
+          },
+        }),
+      );
+    }
+  };
+
   const onChangeValues = (field: string, value: string | number) => {
     setValues({ ...values, [field]: value });
   };
 
-  const getUserName = (id: number, users: IUser[] | null) =>
-    users?.find((user) => user.id == id)?.name;
+  const getUserData = (id: number, users: IUser[] | null) => users?.find((user) => user.id == id);
 
   const getTeamName = (userId: number, users: IUser[] | null) =>
     users?.find((user) => user.id == userId)?.team?.name;

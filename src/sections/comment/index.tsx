@@ -10,6 +10,7 @@ import { SendOutlined } from '@ant-design/icons';
 import { ITeam } from '@/types/user';
 import { ICase } from '@/types/case';
 import { IComment } from '@/types/comment';
+import { ILocalComment } from '@/redux/types/comment';
 import CommentList from './comment-list';
 import IconButton from '@/components/@extended/IconButton';
 
@@ -18,6 +19,10 @@ import dayjs from 'dayjs';
 import * as Yup from 'yup';
 import { useFormik } from 'formik';
 
+// redux
+import { useDispatch } from '@/redux/store';
+import { setLocalComment } from '@/redux/slices/comment';
+
 export interface ICommentProps {
   team: ITeam | undefined;
   comments: IComment[] | null;
@@ -25,12 +30,8 @@ export interface ICommentProps {
 }
 
 export default function Comment({ team, comments, case: selectedCase }: ICommentProps) {
+  const dispatch = useDispatch();
   const [ableToEdit, setAbleToEdit] = useState<boolean>(false);
-
-  const handleClickSave = () => {
-    setAbleToEdit(!ableToEdit);
-    // Todo: Should add to save updated data in local
-  };
 
   type InitialValueType = {
     newComment: string;
@@ -82,11 +83,25 @@ export default function Comment({ team, comments, case: selectedCase }: IComment
     setValues({ ...tempValues });
   };
 
+  const handleClickSave = () => {
+    setAbleToEdit(!ableToEdit);
+    // Todo: Should add to save updated data in local
+    if (selectedCase && values.comments) {
+      const payload: ILocalComment[] = values.comments.map((comment) => ({
+        id: comment.id,
+        author: comment.author.id,
+        case: Number(selectedCase.id),
+        comment: comment.comment,
+      }));
+      dispatch(setLocalComment(payload));
+    }
+  };
+
   const handleAddComment = () => {
     let tempValues: InitialValueType = JSON.parse(JSON.stringify(values));
     if (selectedCase && selectedCase?.authority && values.newComment) {
       tempValues.comments?.push({
-        id: (tempValues.comments[tempValues.comments?.length - 1]?.id || 0) + 1,
+        id: -1,
         author: selectedCase?.authority,
         case: selectedCase,
         comment: values.newComment,
@@ -143,13 +158,14 @@ export default function Comment({ team, comments, case: selectedCase }: IComment
           <TextField
             fullWidth
             placeholder="Type Comment Here"
+            disabled={!ableToEdit}
             value={values.newComment}
             onChange={(event) => setFieldValue('newComment', event.target.value)}
           />
 
           <IconButton
             onClick={handleAddComment}
-            disabled={touched.newComment && errors && !!errors.newComment}
+            disabled={!ableToEdit}
             color={touched.newComment && errors && !!errors.newComment ? 'error' : 'primary'}
           >
             <SendOutlined />

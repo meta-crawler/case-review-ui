@@ -17,8 +17,8 @@ import { LeftOutlined, RightOutlined, RollbackOutlined } from '@ant-design/icons
 
 // redux
 import { useDispatch, useSelector } from '@/redux/store';
-import { getCase, getCasesByAuthority } from '@/redux/slices/case';
-import { getCommentsByCase } from '@/redux/slices/comment';
+import { getCase, getCasesByAuthority, updateCaseReview } from '@/redux/slices/case';
+import { getCommentsByCase, updateComments } from '@/redux/slices/comment';
 
 const enum TAB {
   HIGH_RISK = 'high-risk',
@@ -34,8 +34,8 @@ export default function Case() {
   const router = useRouter();
   const theme = useTheme();
   const dispatch = useDispatch();
-  const { isLoading, case: selectedCase, cases } = useSelector((store) => store.case);
-  const { comments } = useSelector((store) => store.comment);
+  const { isLoading, case: selectedCase, cases, localCase } = useSelector((store) => store.case);
+  const { comments, localComment } = useSelector((store) => store.comment);
   const { case: caseId } = router.query;
   const [tab, setTab] = useState<TAB>(TAB.HIGH_RISK);
 
@@ -92,6 +92,15 @@ export default function Case() {
     }
   };
 
+  const handleSubmit = () => {
+    if (localCase) {
+      dispatch(updateCaseReview(localCase.caseReview));
+    }
+    if (localComment) {
+      dispatch(updateComments(localComment.comments));
+    }
+  };
+
   return (
     <Stack alignItems="center" justifyContent="flex-start" sx={{ height: '100vh' }}>
       <MainCard
@@ -113,7 +122,7 @@ export default function Case() {
                   {selectedCase?.caseReview?.status?.name || '-'}
                 </Typography>
                 <Typography variant="h5" color="text.primary">
-                  Case ID: # {caseId || '-'}
+                  Case ID: # {caseId?.toString().padStart(4, '0') || '-'}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
                   Updated {dayjs(selectedCase?.updatedAt).format('MMM DD, YYYY HH:mm A') || '-'}
@@ -292,7 +301,7 @@ export default function Case() {
           </Grid>
 
           <Grid item xs={12} md={6}>
-            <Button fullWidth variant="shadow" size="large">
+            <Button fullWidth variant="shadow" size="large" onClick={handleSubmit}>
               Submit
             </Button>
           </Grid>
