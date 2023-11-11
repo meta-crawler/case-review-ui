@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/router';
 
 // mui
@@ -13,11 +13,11 @@ import IconButton from '@/components/@extended/IconButton';
 
 // third-party
 import dayjs from 'dayjs';
-import { LeftOutlined, RightOutlined } from '@ant-design/icons';
+import { LeftOutlined, RightOutlined, RollbackOutlined } from '@ant-design/icons';
 
 // redux
 import { useDispatch, useSelector } from '@/redux/store';
-import { getCase } from '@/redux/slices/case';
+import { getCase, getCasesByAuthority } from '@/redux/slices/case';
 import { getCommentsByCase } from '@/redux/slices/comment';
 
 const enum TAB {
@@ -25,11 +25,16 @@ const enum TAB {
   AREA_CONTROL = 'area-control',
 }
 
+const enum NAVIGATION {
+  PREV = 'prev',
+  NEXT = 'next',
+}
+
 export default function Case() {
   const router = useRouter();
   const theme = useTheme();
   const dispatch = useDispatch();
-  const { isLoading, case: selectedCase } = useSelector((store) => store.case);
+  const { isLoading, case: selectedCase, cases } = useSelector((store) => store.case);
   const { comments } = useSelector((store) => store.comment);
   const { case: caseId } = router.query;
   const [tab, setTab] = useState<TAB>(TAB.HIGH_RISK);
@@ -40,6 +45,52 @@ export default function Case() {
       dispatch(getCommentsByCase(Number(caseId)));
     }
   }, [caseId]);
+
+  useEffect(() => {
+    if (selectedCase) {
+      dispatch(getCasesByAuthority(selectedCase.authority.id));
+    }
+  }, [selectedCase]);
+
+  const prevPageButtonDisabled = useMemo(() => {
+    if (!cases || cases.length < 1) {
+      return true;
+    }
+    const index = cases?.findIndex((_) => _.id == Number(caseId));
+    if (index != null && (index == -1 || index < 1)) {
+      return true;
+    }
+    return false;
+  }, [caseId, cases]);
+
+  const nextPageButtonDisabled = useMemo(() => {
+    if (!cases || cases.length < 1) {
+      return true;
+    }
+    const index = cases?.findIndex((_) => _.id == Number(caseId));
+    if (index != null && cases && (index == -1 || index >= cases.length - 1)) {
+      return true;
+    }
+    return false;
+  }, [caseId, cases]);
+
+  const handleNavigation = (moveMode: NAVIGATION, currentId: number) => {
+    switch (moveMode) {
+      case NAVIGATION.PREV:
+        if (!prevPageButtonDisabled) {
+          router.push('/case-review/[case]', `/case-review/${Math.max(currentId - 1, 1)}`);
+        }
+        break;
+      case NAVIGATION.NEXT:
+        if (!nextPageButtonDisabled && cases) {
+          router.push(
+            '/case-review/[case]',
+            `/case-review/${Math.min(currentId + 1, cases[cases.length - 1].id)}`,
+          );
+        }
+        break;
+    }
+  };
 
   return (
     <Stack alignItems="center" justifyContent="flex-start" sx={{ height: '100vh' }}>
@@ -215,15 +266,25 @@ export default function Case() {
           </Grid>
 
           <Grid item xs={12} md={6}>
-            <Stack direction="row" justifyContent="flex-end">
+            <Stack direction="row" justifyContent="space-between">
+              <IconButton onClick={() => router.push('/')}>
+                <RollbackOutlined />
+              </IconButton>
+
               <ButtonGroup
                 disableElevation
                 sx={{ width: 'fit-content', boxShadow: theme.customShadows.z1 }}
               >
-                <IconButton onClick={() => {}}>
+                <IconButton
+                  onClick={() => handleNavigation(NAVIGATION.PREV, Number(caseId))}
+                  disabled={prevPageButtonDisabled}
+                >
                   <LeftOutlined />
                 </IconButton>
-                <IconButton onClick={() => {}}>
+                <IconButton
+                  onClick={() => handleNavigation(NAVIGATION.NEXT, Number(caseId))}
+                  disabled={nextPageButtonDisabled}
+                >
                   <RightOutlined />
                 </IconButton>
               </ButtonGroup>
