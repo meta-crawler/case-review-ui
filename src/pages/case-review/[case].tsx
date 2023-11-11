@@ -9,11 +9,15 @@ import { Grid, Stack, Typography, Button, ButtonGroup } from '@mui/material';
 import MainCard from '@/components/MainCard';
 import CaseReview from '@/sections/case-review';
 import Comment from '@/sections/comment';
+import IconButton from '@/components/@extended/IconButton';
+
+// third-party
+import dayjs from 'dayjs';
+import { LeftOutlined, RightOutlined } from '@ant-design/icons';
 
 // redux
 import { useDispatch, useSelector } from '@/redux/store';
 import { getCase } from '@/redux/slices/case';
-import dayjs from 'dayjs';
 import { getCommentsByCase } from '@/redux/slices/comment';
 
 const enum TAB {
@@ -211,11 +215,25 @@ export default function Case() {
           </Grid>
 
           <Grid item xs={12} md={6}>
-            {/*Operation Button Group*/}
+            <Stack direction="row" justifyContent="flex-end">
+              <ButtonGroup
+                disableElevation
+                sx={{ width: 'fit-content', boxShadow: theme.customShadows.z1 }}
+              >
+                <IconButton onClick={() => {}}>
+                  <LeftOutlined />
+                </IconButton>
+                <IconButton onClick={() => {}}>
+                  <RightOutlined />
+                </IconButton>
+              </ButtonGroup>
+            </Stack>
           </Grid>
 
           <Grid item xs={12} md={6}>
-            {/*Submit Button*/}
+            <Button fullWidth variant="shadow" size="large">
+              Submit
+            </Button>
           </Grid>
         </Grid>
       </MainCard>

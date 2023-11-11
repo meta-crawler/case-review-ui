@@ -87,6 +87,15 @@ function getColorStyle({ variant, theme, color }: IconButtonStyleProps) {
         ...commonShadow,
       };
     case 'text':
+      return {
+        backgroundColor: lighter,
+        '&:hover': {
+          backgroundColor: dark,
+          color: lighter,
+          borderColor: dark,
+        },
+        ...commonShadow,
+      };
     default:
       return {
         '&:hover': {
