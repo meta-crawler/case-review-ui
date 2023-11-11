@@ -15,9 +15,15 @@ import {
 import MainCard from '@/components/MainCard';
 import Layout from '@/components/layout';
 import { useAuthContext } from '@/auth/useAuthContext';
+import IconButton from '@/components/@extended/IconButton';
 
 // third-party
 import dayjs from 'dayjs';
+import { LogoutOutlined } from '@ant-design/icons';
+
+// redux
+import { useDispatch, useSelector } from '@/redux/store';
+import { getCasesByAuthority } from '@/redux/slices/case';
 
 // sx styles
 const actionSX = {
@@ -30,13 +36,9 @@ const actionSX = {
   transform: 'none',
 };
 
-// redux
-import { useDispatch, useSelector } from '@/redux/store';
-import { getCasesByAuthority } from '@/redux/slices/case';
-
 export default function IndexPage() {
   const dispatch = useDispatch();
-  const { user } = useAuthContext();
+  const { user, logout } = useAuthContext();
   const { isLoading, cases } = useSelector((store) => store.case);
 
   useEffect(() => {
@@ -53,7 +55,13 @@ export default function IndexPage() {
         spacing={3}
         sx={{ py: { xs: 3, md: 6, lg: 9 }, px: 2 }}
       >
-        <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={2}>
+        <Stack
+          direction="row"
+          alignItems="center"
+          justifyContent="space-between"
+          spacing={2}
+          sx={{ flex: 1 }}
+        >
           <Typography variant="body1">
             User Name:
             <Typography component="span" variant="h5">
@@ -67,6 +75,10 @@ export default function IndexPage() {
               {user?.team?.name || '-'}
             </Typography>
           </Typography>
+
+          <IconButton onClick={() => logout()}>
+            <LogoutOutlined />
+          </IconButton>
         </Stack>
         <MainCard
           content={false}
