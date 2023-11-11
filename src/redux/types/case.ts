@@ -7,6 +7,14 @@ export interface ILocalCase {
   status: number;
 }
 
+export interface IUpdateCase {
+  id: number;
+  alert: number;
+  status: number;
+  authority: number;
+  caseReview: number;
+}
+
 export interface ILocalCaseData {
   caseReview: ILocalCase;
 }

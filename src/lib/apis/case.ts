@@ -1,5 +1,5 @@
 import axiosInstance from '@/utils/axios';
-import { ILocalCase } from '@/redux/types/case';
+import { ILocalCase, IUpdateCase } from '@/redux/types/case';
 
 export const getAllCasesApi = () => axiosInstance.get('/api/case');
 
@@ -11,4 +11,9 @@ export const getCasesByAuthorityApi = (authorityId: number) =>
 export const updateCaseReviewForCaseApi = (data: ILocalCase) => {
   const { id, ...payload } = data;
   return axiosInstance.put(`/api/case-review?id=${data.id}`, payload);
+};
+
+export const updateCaseApi = (data: IUpdateCase) => {
+  const { id, caseReview, ...others } = data;
+  return axiosInstance.put(`/api/case?id=${id}`, { ...others, case_review: caseReview });
 };

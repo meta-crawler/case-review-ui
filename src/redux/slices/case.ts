@@ -1,11 +1,12 @@
 import { createSlice, Dispatch } from '@reduxjs/toolkit';
 import camelcaseKeys from 'camelcase-keys';
 import { AxiosResponse } from 'axios';
-import { ICaseState, ILocalCase, ILocalCaseData } from '@/redux/types/case';
+import { ICaseState, ILocalCase, ILocalCaseData, IUpdateCase } from '@/redux/types/case';
 import {
   getAllCasesApi,
   getCaseApi,
   getCasesByAuthorityApi,
+  updateCaseApi,
   updateCaseReviewForCaseApi,
 } from '@/lib/apis/case';
 
@@ -106,6 +107,16 @@ export const updateCaseReview = (caseReview: ILocalCase) => async (dispatch: Dis
   dispatch(startLoading());
   try {
     const { data }: AxiosResponse = await updateCaseReviewForCaseApi(caseReview);
+    dispatch(getCaseSuccess(camelcaseKeys(data, { deep: true })));
+  } catch (error) {
+    dispatch(hasError(error));
+  }
+};
+
+export const updateCase = (updatedCase: IUpdateCase) => async (dispatch: Dispatch) => {
+  dispatch(startLoading());
+  try {
+    const { data }: AxiosResponse = await updateCaseApi(updatedCase);
     dispatch(getCaseSuccess(camelcaseKeys(data, { deep: true })));
   } catch (error) {
     dispatch(hasError(error));

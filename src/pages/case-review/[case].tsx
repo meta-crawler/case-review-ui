@@ -6,6 +6,7 @@ import { useTheme } from '@mui/material/styles';
 import { Grid, Stack, Typography, Button, ButtonGroup } from '@mui/material';
 
 // project-import
+import { IUpdateCase } from '@/redux/types/case';
 import MainCard from '@/components/MainCard';
 import CaseReview from '@/sections/case-review';
 import Comment from '@/sections/comment';
@@ -17,8 +18,9 @@ import { LeftOutlined, RightOutlined, RollbackOutlined } from '@ant-design/icons
 
 // redux
 import { useDispatch, useSelector } from '@/redux/store';
-import { getCase, getCasesByAuthority, updateCaseReview } from '@/redux/slices/case';
+import { getCase, getCasesByAuthority, updateCase, updateCaseReview } from '@/redux/slices/case';
 import { getCommentsByCase, updateComments } from '@/redux/slices/comment';
+import { CaseStatus } from '@/lib/constants/case-review';
 
 const enum TAB {
   HIGH_RISK = 'high-risk',
@@ -68,7 +70,7 @@ export default function Case() {
       return true;
     }
     const index = cases?.findIndex((_) => _.id == Number(caseId));
-    if (index != null && cases && (index == -1 || index >= cases.length - 1)) {
+    if (index != null && cases && (index == -1 || index > cases.length - 1)) {
       return true;
     }
     return false;
@@ -85,19 +87,30 @@ export default function Case() {
         if (!nextPageButtonDisabled && cases) {
           router.push(
             '/case-review/[case]',
-            `/case-review/${Math.min(currentId + 1, cases[cases.length - 1].id)}`,
+            `/case-review/${Math.min(currentId + 1, Math.max(...cases.map((_) => _.id)))}`,
           );
         }
         break;
     }
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (localCase) {
-      dispatch(updateCaseReview(localCase.caseReview));
+      await dispatch(updateCaseReview(localCase.caseReview));
     }
     if (localComment) {
-      dispatch(updateComments(localComment.comments));
+      await dispatch(updateComments(localComment.comments));
+    }
+    if (selectedCase) {
+      const updatedCase: IUpdateCase = {
+        id: selectedCase.id,
+        alert: selectedCase.alert.id,
+        status: CaseStatus.REVIEW_SUBMITTED,
+        authority: selectedCase.authority.id,
+        caseReview: selectedCase.caseReview.id,
+      };
+      await dispatch(updateCase(updatedCase));
+      router.reload();
     }
   };
 
@@ -119,7 +132,7 @@ export default function Case() {
             <Stack spacing={3}>
               <Stack spacing={1}>
                 <Typography variant="h2" color="text.primary">
-                  {selectedCase?.caseReview?.status?.name || '-'}
+                  {selectedCase?.status?.name || '-'}
                 </Typography>
                 <Typography variant="h5" color="text.primary">
                   Case ID: # {caseId?.toString().padStart(4, '0') || '-'}
