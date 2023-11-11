@@ -14,6 +14,7 @@ import Comment from '@/sections/comment';
 import { useDispatch, useSelector } from '@/redux/store';
 import { getCase } from '@/redux/slices/case';
 import dayjs from 'dayjs';
+import { getCommentsByCase } from '@/redux/slices/comment';
 
 const enum TAB {
   HIGH_RISK = 'high-risk',
@@ -25,11 +26,15 @@ export default function Case() {
   const theme = useTheme();
   const dispatch = useDispatch();
   const { isLoading, case: selectedCase } = useSelector((store) => store.case);
+  const { comments } = useSelector((store) => store.comment);
   const { case: caseId } = router.query;
   const [tab, setTab] = useState<TAB>(TAB.HIGH_RISK);
 
   useEffect(() => {
-    dispatch(getCase(Number(caseId)));
+    if (caseId) {
+      dispatch(getCase(Number(caseId)));
+      dispatch(getCommentsByCase(Number(caseId)));
+    }
   }, [caseId]);
 
   return (
@@ -202,7 +207,7 @@ export default function Case() {
           </Grid>
 
           <Grid item xs={12} md={6}>
-            <Comment team={selectedCase?.authority?.team} comments={[]} />
+            <Comment team={selectedCase?.authority?.team} comments={comments} case={selectedCase} />
           </Grid>
 
           <Grid item xs={12} md={6}>

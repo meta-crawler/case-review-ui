@@ -1,24 +1,100 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 // mui
-import { Button, Stack, Typography, Divider } from '@mui/material';
+import { Button, Stack, Typography, Divider, TextField } from '@mui/material';
+
+// antd
+import { SendOutlined } from '@ant-design/icons';
 
 // project-import
 import { ITeam } from '@/types/user';
+import { ICase } from '@/types/case';
 import { IComment } from '@/types/comment';
 import CommentList from './comment-list';
+import IconButton from '@/components/@extended/IconButton';
+
+// third-party
+import dayjs from 'dayjs';
+import * as Yup from 'yup';
+import { useFormik } from 'formik';
 
 export interface ICommentProps {
   team: ITeam | undefined;
   comments: IComment[] | null;
+  case: ICase | null;
 }
 
-export default function Comment({ team, comments }: ICommentProps) {
+export default function Comment({ team, comments, case: selectedCase }: ICommentProps) {
   const [ableToEdit, setAbleToEdit] = useState<boolean>(false);
 
   const handleClickSave = () => {
     setAbleToEdit(!ableToEdit);
     // Todo: Should add to save updated data in local
+  };
+
+  type InitialValueType = {
+    newComment: string;
+    comments: IComment[] | null;
+    ableToEdits: boolean[];
+  };
+
+  const initialValues: InitialValueType = {
+    newComment: '',
+    comments: comments,
+    ableToEdits: [],
+  };
+
+  const validationSchema = Yup.object().shape({
+    newComment: Yup.string().required('Please input comment'),
+    comments: Yup.array().required(),
+    ableToEdits: Yup.array().required(),
+  });
+
+  const formik = useFormik({
+    initialValues,
+    validationSchema,
+    onSubmit: () => {},
+  });
+
+  const { values, setValues, setFieldValue, errors, touched } = formik;
+
+  useEffect(() => {
+    if (comments) {
+      setValues({ ...values, comments: comments, ableToEdits: comments.map((_) => false) });
+    }
+  }, [comments]);
+
+  const handleChangeComment = (comment: string, id: number) => {
+    let tempValues: InitialValueType = JSON.parse(JSON.stringify(values));
+    const index = tempValues.comments?.findIndex((_comment) => _comment.id == id);
+    if (index != undefined && index != -1 && tempValues.comments) {
+      tempValues.comments[index].comment = comment;
+    }
+    setValues({ ...tempValues });
+  };
+
+  const handleChangeEdit = (ableToEdit: boolean, id: number) => {
+    let tempValues: InitialValueType = JSON.parse(JSON.stringify(values));
+    const index = tempValues.comments?.findIndex((_comment) => _comment.id == id);
+    if (index != undefined && index != -1 && tempValues.comments) {
+      tempValues.ableToEdits[index] = ableToEdit;
+    }
+    setValues({ ...tempValues });
+  };
+
+  const handleAddComment = () => {
+    let tempValues: InitialValueType = JSON.parse(JSON.stringify(values));
+    if (selectedCase && selectedCase?.authority && values.newComment) {
+      tempValues.comments?.push({
+        id: (tempValues.comments[tempValues.comments?.length - 1]?.id || 0) + 1,
+        author: selectedCase?.authority,
+        case: selectedCase,
+        comment: values.newComment,
+        createdAt: dayjs().format('YYYY-MM-DDTHH:mm:ss.SSSSSSZ'),
+        updatedAt: dayjs().format('YYYY-MM-DDTHH:mm:ss.SSSSSSZ'),
+      });
+    }
+    setValues({ ...tempValues, newComment: '' });
   };
 
   return (
@@ -55,7 +131,30 @@ export default function Comment({ team, comments }: ICommentProps) {
 
         <Divider />
 
-        <CommentList comments={comments} />
+        <CommentList
+          comments={values.comments}
+          ableToEdits={values.ableToEdits}
+          canEditFromParent={ableToEdit}
+          onChangeEdit={handleChangeEdit}
+          onChangeComment={handleChangeComment}
+        />
+
+        <Stack direction="row" alignItems="center" sx={{ px: { xs: 2, md: 4 } }} spacing={1}>
+          <TextField
+            fullWidth
+            placeholder="Type Comment Here"
+            value={values.newComment}
+            onChange={(event) => setFieldValue('newComment', event.target.value)}
+          />
+
+          <IconButton
+            onClick={handleAddComment}
+            disabled={touched.newComment && errors && !!errors.newComment}
+            color={touched.newComment && errors && !!errors.newComment ? 'error' : 'primary'}
+          >
+            <SendOutlined />
+          </IconButton>
+        </Stack>
       </Stack>
     </>
   );
