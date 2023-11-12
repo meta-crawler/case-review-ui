@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
 // mui
 import {
@@ -27,12 +27,17 @@ import { setLocalCase } from '@/redux/slices/case';
 
 export interface ICaseReviewProps {
   caseReview: ICaseReview | undefined;
+  ableToEdit: boolean;
+  onChangeAbleToEdit: (ableToEdit: boolean) => void;
 }
 
-export default function CaseReview({ caseReview }: ICaseReviewProps) {
+export default function CaseReview({
+  caseReview,
+  ableToEdit,
+  onChangeAbleToEdit,
+}: ICaseReviewProps) {
   const dispatch = useDispatch();
   const { isLoading, users } = useSelector((store) => store.user);
-  const [ableToEdit, setAbleToEdit] = useState<boolean>(false);
 
   useEffect(() => {
     if (caseReview) {
@@ -74,7 +79,7 @@ export default function CaseReview({ caseReview }: ICaseReviewProps) {
   }, [caseReview]);
 
   const handleClickSave = () => {
-    setAbleToEdit(!ableToEdit);
+    onChangeAbleToEdit(!ableToEdit);
     // Todo: Should add to save updated data in local
     if (caseReview) {
       dispatch(

@@ -40,6 +40,8 @@ export default function Case() {
   const { comments, localComment } = useSelector((store) => store.comment);
   const { case: caseId } = router.query;
   const [tab, setTab] = useState<TAB>(TAB.HIGH_RISK);
+  const [caseReviewAbleToEdit, setCaseReviewAbleToEdit] = useState<boolean>(false);
+  const [commentsAbleToEdit, setCommentsAbleToEdit] = useState<boolean>(false);
 
   useEffect(() => {
     if (caseId) {
@@ -58,8 +60,7 @@ export default function Case() {
     if (!cases || cases.length < 1) {
       return true;
     }
-    const index = cases?.findIndex((_) => _.id == Number(caseId));
-    if (index != null && (index == -1 || index < 1)) {
+    if (Number(caseId) <= 1) {
       return true;
     }
     return false;
@@ -69,8 +70,7 @@ export default function Case() {
     if (!cases || cases.length < 1) {
       return true;
     }
-    const index = cases?.findIndex((_) => _.id == Number(caseId));
-    if (index != null && cases && (index == -1 || index > cases.length - 1)) {
+    if (cases && Number(caseId) > cases.length - 1) {
       return true;
     }
     return false;
@@ -280,11 +280,21 @@ export default function Case() {
           </Grid>
 
           <Grid item xs={12} md={6}>
-            <CaseReview caseReview={selectedCase?.caseReview} />
+            <CaseReview
+              caseReview={selectedCase?.caseReview}
+              ableToEdit={caseReviewAbleToEdit}
+              onChangeAbleToEdit={(ableToEdit: boolean) => setCaseReviewAbleToEdit(ableToEdit)}
+            />
           </Grid>
 
           <Grid item xs={12} md={6}>
-            <Comment team={selectedCase?.authority?.team} comments={comments} case={selectedCase} />
+            <Comment
+              team={selectedCase?.authority?.team}
+              comments={comments}
+              case={selectedCase}
+              ableToEdit={commentsAbleToEdit}
+              onChangeAbleToEdit={(ableToEdit: boolean) => setCommentsAbleToEdit(ableToEdit)}
+            />
           </Grid>
 
           <Grid item xs={12} md={6}>
@@ -314,7 +324,13 @@ export default function Case() {
           </Grid>
 
           <Grid item xs={12} md={6}>
-            <Button fullWidth variant="shadow" size="large" onClick={handleSubmit}>
+            <Button
+              fullWidth
+              variant="shadow"
+              size="large"
+              onClick={handleSubmit}
+              disabled={caseReviewAbleToEdit || commentsAbleToEdit}
+            >
               Submit
             </Button>
           </Grid>

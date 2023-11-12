@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
 // mui
 import { Button, Stack, Typography, Divider, TextField } from '@mui/material';
@@ -27,11 +27,18 @@ export interface ICommentProps {
   team: ITeam | undefined;
   comments: IComment[] | null;
   case: ICase | null;
+  ableToEdit: boolean;
+  onChangeAbleToEdit: (ableToEdit: boolean) => void;
 }
 
-export default function Comment({ team, comments, case: selectedCase }: ICommentProps) {
+export default function Comment({
+  team,
+  comments,
+  case: selectedCase,
+  ableToEdit,
+  onChangeAbleToEdit,
+}: ICommentProps) {
   const dispatch = useDispatch();
-  const [ableToEdit, setAbleToEdit] = useState<boolean>(false);
 
   type InitialValueType = {
     newComment: string;
@@ -84,7 +91,7 @@ export default function Comment({ team, comments, case: selectedCase }: IComment
   };
 
   const handleClickSave = () => {
-    setAbleToEdit(!ableToEdit);
+    onChangeAbleToEdit(!ableToEdit);
     // Todo: Should add to save updated data in local
     if (selectedCase && values.comments) {
       const payload: ILocalComment[] = values.comments.map((comment) => ({
