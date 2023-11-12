@@ -29,6 +29,8 @@ yarn install
 yarn dev
 ```
 
+Then please open `http://localhost:3000` after confirming that the backend api runs at `http://localhost:8000`.
+
 ## Screenshot
 ![Screenshot from 2023-11-11 23-59-02](https://github.com/meta-crawler/case-review-ui/assets/114304642/3fb4af67-405b-4e2f-879a-1e758b262784)
 
